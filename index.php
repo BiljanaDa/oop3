@@ -1,51 +1,61 @@
-<?php
+<?php 
 
-class Email {
-    public string $adressRecipient;
-    public string $body;
-    public string $message;
+interface Vehicle {
+    public function inspect();
+}
 
-    public function __construct($adressRecipient, $body, $message) {
-        $this->adressRecipient = $adressRecipient;
-        $this->body = $body;
-        $this->message = $message;
+class Car implements Vehicle {
+    public function inspect() {}
+}
+
+class Bike implements Vehicle {
+    public function inspect() {}
+}
+
+interface Factory {
+    public function makeVehicle(): Vehicle;
+}
+
+class CarFactory implements Factory {
+    public function makeVehicle(): Vehicle {
+    return new Car();
     }
 }
 
-class MailService {
-    private static $instance;
-    private $count;
+class BikeFactory implements Factory {
+    public function makeVehicle(): Vehicle {
+    return new Bike();
+    }
+}
 
-     private function __construct() {
-        $this->count = 0;
+class InspectionService {
+    private static $instance;
+    private $countInspectVehicle;
+
+    private function __construct() {
+        $this->countInspectVehicle = 0;
     }
 
     static function getInstance() {
         if (self::$instance == NULL) {
-            self::$instance = new MailService();
+            self::$instance = new InspectionService();
         }
+
         return self::$instance;
     }
 
-    public function incrementCount() {
-        $this->count++;
-    }
+    public function numberOfVehicle(Vehicle $vehicle) {
+        $this->countInspectVehicle++;
+        printf("\nBroj pregledanih vozila je %s", $this->countInspectVehicle);
 
-
-    public function getCount() {
-        return $this->count;
     }
 
 }
 
-class MailFactory {
-    public function makeEmail($adressRecipient, $body, $message): Email {
-        return new Email($adressRecipient, $body, $message);
-    }
-}
+$factory = new CarFactory();
+$car = $factory->makeVehicle();
 
-$factory = new MailFactory();
-$email = $factory->makeEmail("pera@email", "smt", "tekst poruke");
-MailService::getInstance()->incrementCount();
-var_dump($email);
-echo "Broj poslatih mejlova: " . MailService::getInstance()->getCount();
+InspectionService::getInstance()->numberOfVehicle($car);
+
+
+
